@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import './App.css'
 import { geoEqualEarth, geoPath } from "d3-geo"
 import { feature } from "topojson-client"
 import { ToastContainer, toast } from 'react-toastify';
@@ -8,7 +7,6 @@ import jsonData from "./data.json";
 const projection = geoEqualEarth()
   .scale(180)
   .translate([ 850 / 2, 550 / 2 ])
-
 function App() {
   const [geographies, setGeographies] = useState([]);
   const [citie, setCities] = useState([]);
@@ -24,13 +22,11 @@ function App() {
         })
       })
         setCities(jsonData);
-        console.log(citie);
         for(let i=0;i<citie.length;i++){
           console.log(citie[i].net);
         }
   }, [citie])
   const handleMarkerClick = i => {
-    console.log("Marker: ", citie[i].coordinates[0] , citie[i].coordinates[1])
     getCity(citie[i].coordinates[0] , citie[i].coordinates[1]).then(x => { 
       toast.success(`${x} data usage is ${citie[i].usage}`) 
     })
@@ -55,7 +51,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer draggable={false} autoClose ={2000}/>
-      {geographies.length > 0 ? <svg width={ "900px" } height={ "450px" } style={{borderColor :"black",borderStyle:"solid"}}>
+      {geographies.length > 0 ? <svg width={ "900px" } height={ "450px" }>
           <g className="countries">
             {
               geographies.map((d,i) => (
