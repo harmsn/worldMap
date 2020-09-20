@@ -1,0 +1,17 @@
+[
+    {"id": 1,"coordinates": [139.6917,35.6895],"usage": 5600 },
+    { "id" : 2,"coordinates": [106.8650,-6.1751],"usage": 3053 },
+    { "id": 3,"coordinates": [77.1025,28.7041],"usage": 320 },
+    { "id": 4,"coordinates": [120.9842,14.5995],"usage": 1320 },
+    { "id": 5,"coordinates": [126.9780,37.5665],"usage": 120 },
+    { "id": 6,"coordinates": [121.4737,31.2304],"usage": 5320 },
+    { "id": 7,"coordinates": [67.0099,24.8615],"usage": 4370},
+    { "id": 8,"coordinates": [116.4074,39.9042],"usage": 43260 },
+    { "id": 9,"coordinates": [-74.0059,40.7128],"usage": 67320 },
+    { "id": 10,"coordinates": [113.2644,23.1291],"usage": 20 },
+    { "id": 11,"coordinates": [-46.6333,-23.5505],"usage": 6320 },
+    { "id": 12,"coordinates": [-99.1332,19.4326],"usage": 3320 },
+    { "id": 12,"coordinates": [-118.2437,34.0522],"usage": 3320 },
+    { "id": 12,"coordinates": [28.9784,41.0082],"usage": 3320 },
+      { "id": 12,"coordinates": [2.3522,48.8566],"usage": 3320 }  
+]
