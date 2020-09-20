@@ -5,11 +5,15 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import jsonData from "./data.json";
 const projection = geoEqualEarth()
-  .scale(180)
+  .scale(160)
   .translate([ 850 / 2, 550 / 2 ])
 function App() {
   const [geographies, setGeographies] = useState([]);
   const [citie, setCities] = useState([]);
+  const [counter, setCounter] = useState(0);
+  const [calculate, setCalc] = useState([0]);
+  const [percent, setPercent] = useState([0]);
+  let calc = [0,0,0,0]
   useEffect(() => {
     fetch("/world-110m.json")
       .then(response => {
@@ -23,9 +27,20 @@ function App() {
       })
         setCities(jsonData);
         for(let i=0;i<citie.length;i++){
-          console.log(citie[i].net);
+          if(citie[i].usage<500&citie[i].usage>=0){ calc[0]++;setCalc(calc)}
+          if(citie[i].usage>=500&&citie[i].usage<1000) { calc[1]++;setCalc(calc) }
+          if(citie[i].usage>=1000&&citie[i].usage<5000) { calc[2]++;setCalc(calc) }
+          if(citie[i].usage>=5000) { calc[3]++;setCalc(calc) }
         }
-  }, [citie])
+        for(let i=0;i<calculate.length;i++){
+          if(counter<4){
+            calc[i] = (calc[i]/citie.length)*100;
+            setCounter(counter => counter + 1);
+            setCalc(calc);
+          }
+        }
+        setPercent(calculate);
+  }, [citie,counter])
   const handleMarkerClick = i => {
     getCity(citie[i].coordinates[0] , citie[i].coordinates[1]).then(x => { 
       toast.success(`${x} data usage is ${citie[i].usage}`) 
@@ -36,11 +51,11 @@ function App() {
     const apiResponse = await fetch(api).then(res => res.json())
     return apiResponse.principalSubdivision;
   }
-  function opacity(usage){
-    if(usage<500&usage>=0) return 0.36;
-    if(usage>=500&&usage<1000) return 0.45;
-    if(usage>=1000&&usage<5000) return 0.65;
-    if(usage>=5000) return 0.7;
+  function fill(usage){
+    if(usage<500) return "#99f3bd";
+    if(usage>=500&&usage<1000) return "#28df99";
+    if(usage>=1000&&usage<5000) return "#68b0ab";
+    if(usage>=5000) return "#006a71";
   }
   function radius(usage){
     if(usage<500&usage>=0) return 5;
@@ -49,24 +64,24 @@ function App() {
     if(usage>=5000) return 13;
   }
   return (
-    <div className="App">
+    <div>
       <ToastContainer draggable={false} autoClose ={2000}/>
-      {geographies.length > 0 ? <svg width={ "900px" } height={ "450px" }>
-          <g className="countries">
+      {counter > 0 &&  geographies.length > 0 ? <svg width={ "900px" } height={ "450px" }>
+          <g>
             {
               geographies.map((d,i) => (
                 <path
                   key={ `path-${ i }` }
                   d={ geoPath().projection(projection)(d) }
                   className="country"
-                  fill={ `rgba(38,50,56,${ 1 / geographies.length * i})` }
-                  stroke="#FFFFFF"
+                  fill  = "#eee"
+                  stroke="black"
                   strokeWidth={ 0.5 }
                 />
               ))
             }
           </g>
-            <g className="markers">
+            <g>
             {
                 citie.map((city, i) => (
                   <circle
@@ -74,15 +89,25 @@ function App() {
                     cx={ projection(city.coordinates)[0] }
                     cy={ projection(city.coordinates)[1] }
                     r={ radius(city.usage) }
-                    style={{opacity : opacity(city.usage)}}
-                    fill="blue"
-                    stroke="#FFFFFF"
-                    className="marker"
+                    fill={fill(city.usage)}
                    onClick={ () => handleMarkerClick(i) }
                   />
                 ))
               }
+            </g>
+              {(percent[0]&&percent[1]&&percent[2]&&percent[3]) ? <g>
+                <rect width={calculate[3]*50} height={10} fill="#006a71" />
+                <text x="0" y="40" fontFamily="Verdana" fontSize="15" fill="blue">Usage :</text>
+              <text x="60" y="40" fontFamily="Verdana" fontSize="15" fill="blue"> > 5K {Math.ceil(percent[3])}%</text>
+                <rect width={calculate[2]*50} height={10} fill="#68b0ab" x={calculate[3]*50}  />
+                <text x={calculate[3]*50 +25} y="40" fontFamily="Verdana" fontSize="15" fill="blue" > 1K-5K  {Math.ceil(percent[2])}%</text>
+                <rect width={calculate[1]*50} height={10} fill="#28df99" x={(calculate[3]*50)+(calculate[2]*50)} />
+                <text x={(calculate[3]*50)+(calculate[2]*50)} y="40" fontFamily="Verdana" fontSize="15" fill="blue" > 1K-500  {Math.ceil(percent[1])}%</text>
+                <rect width={calculate[0]*50} height={10} fill="#99f3bd" x={(calculate[3]*50)+(calculate[2]*50)+(calculate[1]*50)}/>
+                <text x={(calculate[3]*50)+(calculate[2]*50)+(calculate[1]*50)} y="40" fontFamily="Verdana" fontSize="15" fill="blue" > {'<'} 500 {Math.ceil(percent[0])} %</text>
             </g> 
+            : <g><rect width={900} height={10} fill="red"/></g>
+            }
       </svg> : <p>Loading.....</p>}
     </div>
   );
